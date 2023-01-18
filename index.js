@@ -1,5 +1,6 @@
 const express = require('express')
 const axios = require('axios')
+const { SocksProxyAgent } = require('socks-proxy-agent');
 const rl = require('express-rate-limit')
 const mysql = require('mysql')
 const { Webhook } = require('dis-logs')
@@ -32,6 +33,7 @@ app.use(express.json())
 
 app.set('db', db);
 app.set('log', log);
+app.set('SocksProxyAgent', SocksProxyAgent);
 app.set('mysql', mysql);
 app.set('axios', axios);
 app.set('config', config);
