@@ -16,23 +16,24 @@ module.exports = async function(app) {
                 let type
                 switch (i) {
                     case 0:
-                        type = 'proxies_http'
+                        type = 'http'
                         break;
                     case 1:
-                        type = 'proxies_socks4'
+                        type = 'socks4'
                         break;
                     case 2:
-                        type = 'proxies_socks5'
+                        type = 'socks5'
                         break;
                     default:
                         config.validator.recheck_proxies = false
                         i = -1
+                        continue;
                 }
                 result = {
                     type: type,
                     proxies: []
                 }
-                await db.query(`SELECT * FROM ${type}`, async function (error, res, fields) {
+                await db.query(`SELECT * FROM proxies_${type}`, async function (error, res, fields) {
                     if (error) return
                     res.forEach(proxy => {
                         result.proxies.push(proxy['proxy']);
