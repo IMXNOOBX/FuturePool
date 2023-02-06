@@ -8,7 +8,7 @@ module.exports = {
 
     scraper: {
         check_dom: "http://ip-api.com/json", // "https://google.com",
-        timeout: 30000,
+        timeout: 10000,
         proxy_regex: /(?<!\d)([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\.([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])){3}(:\d{1,5})?(?!\d)/g // https://stackoverflow.com/a/63403973
     },
 

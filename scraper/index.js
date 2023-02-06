@@ -11,38 +11,38 @@ module.exports = async function(app) {
     async function scrape_proxies() {
         for (let i = 0; i < config.proxy_pools.length; i++) {
             console.log(i)
-            let result = {}
-            if (config.validator.recheck_proxies) {
-                let type
-                switch (i) {
-                    case 0:
-                        type = 'proxies_http'
-                        break;
-                    case 1:
-                        type = 'proxies_socks4'
-                        break;
-                    case 2:
-                        type = 'proxies_socks5'
-                        break;
-                    default:
-                        config.validator.recheck_proxies = false
-                        i = -1
-                }
-                result = {
-                    type: type,
-                    proxies: []
-                }
-                await db.query(`SELECT * FROM ${type}`, async function (error, res, fields) {
-                    if (error) return
-                    res.forEach(proxy => {
-                        result.proxies.push(proxy['proxy']);
-                    }) 
+            let result = await scraper_utils.download_proxies(config.proxy_pools[i])
+            // if (config.validator.recheck_proxies) {
+            //     let type
+            //     switch (i) {
+            //         case 0:
+            //             type = 'proxies_http'
+            //             break;
+            //         case 1:
+            //             type = 'proxies_socks4'
+            //             break;
+            //         case 2:
+            //             type = 'proxies_socks5'
+            //             break;
+            //         default:
+            //             config.validator.recheck_proxies = false
+            //             i = -1
+            //     }
+            //     result = {
+            //         type: type,
+            //         proxies: []
+            //     }
+            //     await db.query(`SELECT * FROM ${type}`, async function (error, res, fields) {
+            //         if (error) return
+            //         res.forEach(proxy => {
+            //             result.proxies.push(proxy['proxy']);
+            //         }) 
                     
-                    log.console('Proxy recheck is enabled, downloading ' + type + ' and checking them again.')
-                });
-            } else {
-                result = await scraper_utils.download_proxies(config.proxy_pools[i])
-            }
+            //         log.console('Proxy recheck is enabled, downloading ' + type + ' and checking them again.')
+            //     });
+            // } else {
+            //     result = await scraper_utils.download_proxies(config.proxy_pools[i])
+            // }
 
 
             if (!result) {
