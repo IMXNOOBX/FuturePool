@@ -12,8 +12,8 @@ const app = express()
 const log = new Webhook(config.log_webhook);
 
 const public_limiter = rl({
-	windowMs: 60 * 1000, // 1 minutes
-	max: 100,
+	windowMs: 24 * 60 * 1000, // 500 a day
+	max: 500,
     handler: function (req, res) {
         return res.status(429).json({
           error: 'You sent too many requests. Please wait a while and then try again.'
@@ -27,13 +27,14 @@ const db = mysql.createConnection({
 	password : config.db.password,
 	database : config.db.database
 });
+// if (!db) throw "Error, could not connect to the database. its needed to store the data.";
 
 app.use('api/v1', public_limiter)
 app.use(express.json())
 
 app.set('db', db);
 app.set('log', log);
-app.set('SocksProxyAgent', SocksProxyAgent);
+app.set('spa', SocksProxyAgent);
 app.set('mysql', mysql);
 app.set('axios', axios);
 app.set('config', config);

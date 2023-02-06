@@ -9,8 +9,8 @@ module.exports = async function(app) {
     let schedule = app.get('schedule')
 	
     async function scrape_proxies() {
+        db.query(`DELETE * FROM proxies_http, proxies_socks4, proxies_socks5`);
         for (let i = 0; i < config.proxy_pools.length; i++) {
-            console.log(i)
             let result = {}
             if (config.validator.recheck_proxies) {
                 let type
@@ -44,7 +44,6 @@ module.exports = async function(app) {
             } else {
                 result = await scraper_utils.download_proxies(config.proxy_pools[i])
             }
-
 
             if (!result) {
                 log.error('Could not download proxies from ' + config.proxy_pools[i]?.url + ' please remove it or fix the url manually')
@@ -92,7 +91,7 @@ module.exports = async function(app) {
         }
 	}
 
-	schedule.scheduleJob('15 * * * *', function () {  // this for one hour: https://crontab.guru/#15_*_*_*_*
+	schedule.scheduleJob('15 * * * *', function () {  // this for 15 minutes: https://crontab.guru/#15_*_*_*_*
 		scrape_proxies()
 	});
 	scrape_proxies()

@@ -3,12 +3,12 @@ module.exports = {
     log_webhook: "https://discord.com/api/webhooks/1064867895676522547/IfRoA67qIvOA10VDqOtDBc4hhmgqdktHwcoHpFNd1GmRnpe8rrdLZhod0KG04pEgbQc7", // webhook to a private discord server where you will receive debug logs
 
     validator: {
-        recheck_proxies: true, // check last pool proxies again if they are still alive or not
+        recheck_proxies: false, // check last pool proxies again if they are still alive or not
     },
 
     scraper: {
         check_dom: "http://ip-api.com/json", // "https://google.com",
-        timeout: 10000,
+        timeout: 2000,
         proxy_regex: /(?<!\d)([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\.([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])){3}(:\d{1,5})?(?!\d)/g // https://stackoverflow.com/a/63403973
     },
 

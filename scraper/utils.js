@@ -5,7 +5,7 @@ module.exports = function(app) {
     let utils = app.get('utils')
     let config = app.get('config')
     let axios = app.get('axios')
-    let SocksProxyAgent = app.get('SocksProxyAgent')
+    let spa = app.get('spa')
 
 	modules.remove_duplicates = function(arr) {
 		let unique_array = []
@@ -168,10 +168,10 @@ module.exports = function(app) {
                 for (let i = 0; i < tocheck_array.length; i++) {
                     let tocheck_proxy = tocheck_array[i].split(":"); if (!tocheck_proxy[0] || !tocheck_proxy[1]) continue;
                     // console.log(`Proxy: ${tocheck_array[i]} agent:  socks4://${tocheck_proxy[0]}:${tocheck_proxy[1]}`)
-                    // const httpsAgent = new SocksProxyAgent(`socks4://${tocheck_proxy[0]}:${tocheck_proxy[1]}`);
+                    // const httpsAgent = new spa(`socks4://${tocheck_proxy[0]}:${tocheck_proxy[1]}`);
                     const client = axios.create({
                         baseURL: config.scraper.check_dom || "https://google.com", 
-                        httpsAgent: new SocksProxyAgent(`socks4://${tocheck_proxy[0]}:${tocheck_proxy[1]}`),
+                        httpsAgent: new spa(`socks4://${tocheck_proxy[0]}:${tocheck_proxy[1]}`),
                         timeout: config.scraper.timeout || 5000,
                     });
 
@@ -189,10 +189,10 @@ module.exports = function(app) {
             case 'socks5':
                 for (let i = 0; i < tocheck_array.length; i++) {
                     let tocheck_proxy = tocheck_array[i].split(":"); if (!tocheck_proxy[0] || !tocheck_proxy[1]) continue;
-                    // const httpsAgent = new SocksProxyAgent(`socks5://${tocheck_proxy[0]}:${tocheck_proxy[1]}`);
+                    // const httpsAgent = new spa(`socks5://${tocheck_proxy[0]}:${tocheck_proxy[1]}`);
                     const client = axios.create({
                         baseURL: config.scraper.check_dom || "https://google.com", 
-                        httpsAgent: new SocksProxyAgent(`socks5://${tocheck_proxy[0]}:${tocheck_proxy[1]}`),
+                        httpsAgent: new spa(`socks5://${tocheck_proxy[0]}:${tocheck_proxy[1]}`),
                         timeout: config.scraper.timeout || 5000,
                     });
                     proms.push(
