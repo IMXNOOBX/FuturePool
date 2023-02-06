@@ -1,6 +1,6 @@
 {
   "name": "futurepool",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Proxy pool with http rest api and advanced settings",
   "main": "index.js",
   "scripts": {
