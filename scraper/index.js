@@ -9,9 +9,16 @@ module.exports = async function(app) {
     let schedule = app.get('schedule')
 	
     async function scrape_proxies() {
-        db.query(`DELETE * FROM proxies_http, proxies_socks4, proxies_socks5`);
+        if (!config.validator.recheck_proxies) {
+            // await db.query(`DELETE FROM proxies_http;`);
+            // await db.query(`DELETE FROM proxies_socks4;`);
+            // await db.query(`DELETE FROM proxies_socks5`);
+        }
         for (let i = 0; i < config.proxy_pools.length; i++) {
-            let result = {}
+            let result = {
+                type: type,
+                proxies: []
+            }
             if (config.validator.recheck_proxies) {
                 let type
                 switch (i) {
@@ -25,22 +32,16 @@ module.exports = async function(app) {
                         type = 'socks5'
                         break;
                     default:
+                        // await db.query(`DELETE FROM proxies_http;`);
+                        // await db.query(`DELETE FROM proxies_socks4;`);
+                        // await db.query(`DELETE FROM proxies_socks5`);
                         config.validator.recheck_proxies = false
                         i = -1
                         continue;
                 }
-                result = {
-                    type: type,
-                    proxies: []
-                }
-                await db.query(`SELECT * FROM proxies_${type}`, async function (error, res, fields) {
-                    if (error) return
-                    res.forEach(proxy => {
-                        result.proxies.push(proxy['proxy']);
-                    }) 
-                    
-                    log.console('Proxy recheck is enabled, downloading ' + type + ' and checking them again.')
-                });
+
+                result = scraper_utils.get_from_database(type)
+                log.console('['+i+'] Proxy recheck is enabled, downloading ' + type + ' and checking them again.')
             } else {
                 result = await scraper_utils.download_proxies(config.proxy_pools[i])
             }
@@ -50,10 +51,15 @@ module.exports = async function(app) {
                 continue;
             }
 
-            scraper_utils.clean_database_duplicates(result.type, result.proxies, function(new_proxies) {
-                if (!new_proxies) return log.error('Could not check if there were any duplicated proxies')
-                if (new_proxies.length === 0) return log.error('All proxies from ' + config.proxy_pools[i].url + ' were duplicated.')
+            if (config.validator.recheck_proxies) console.log(`${i} > ${result.type}, ${result.proxies}`)
 
+            return
+
+            scraper_utils.clean_database_duplicates(result.type, result.proxies, config.validator.recheck_proxies,  function(new_proxies) {
+                if (!new_proxies) return log.error('Could not check if there were any duplicated proxies')
+                if (new_proxies.length === 0 && !config.validator.recheck_proxies) return log.error('All proxies from ' + config.proxy_pools[i].url + ' were duplicated.')
+
+                // console.log(new_proxies)
                 scraper_utils.check_proxies(result.type, new_proxies, function(working_array) { // Check if proxies are alive
                     if (!working_array) return log.error('Proxy checker returned no results')
                     if (working_array.length === 0) return log.error('No proxies from ' + config.proxy_pools[i].url + ' were working.')

@@ -17,7 +17,8 @@ module.exports = function(app) {
 		return unique_array
 	}
 
-    modules.clean_database_duplicates = async function(type, arr, _callback) {
+    modules.clean_database_duplicates = async function(type, arr, skip,  _callback) {
+        if (skip) return arr;
 		let unique_array = []
 		let database_array = []
 
@@ -34,9 +35,24 @@ module.exports = function(app) {
                 }
             }
 
-            log.console('Finished checking for duplicates, removed: '+ (arr.length - unique_array.length))
+            // log.console('Finished checking for duplicates, removed: '+ (arr.length - unique_array.length))
             _callback(unique_array)
         });
+	}
+
+    modules.get_from_database = async function(type, _callback) {
+        const _proxies = [];
+        await db.query(`SELECT * FROM proxies_${type}`, async function (error, res, fields) {
+            if (error) return false;
+            res.forEach(proxy => {
+                _proxies.push(proxy['proxy']);
+            }) 
+        });
+        
+        return {
+            type: type,
+            proxies: _proxies
+        }
 	}
 
 	modules.download_proxies = async function(list) {
@@ -54,7 +70,7 @@ module.exports = function(app) {
 
         let response
         do {
-            log.console(`Downloading ${recursive ? url.replace(`{${replacable}}`, replace[recursive_loop]) : url} proxy list`)
+            // log.console(`Downloading ${recursive ? url.replace(`{${replacable}}`, replace[recursive_loop]) : url} proxy list`)
 
             response = await axios({
                 url: recursive ? url.replace(`{${replacable}}`, replace[recursive_loop]) : url,
@@ -138,7 +154,7 @@ module.exports = function(app) {
     modules.check_proxies = async function (type, tocheck_array, _callback) {
         let working_array = [];
 
-        console.log(`${type} - Checking proxies ${tocheck_array.length}`)
+        // console.log(`${type} - Checking proxies ${tocheck_array.length}`)
         var proms = [];
         switch (type) {
             case 'http':
@@ -155,7 +171,7 @@ module.exports = function(app) {
                         },
                         timeout: config.scraper.timeout || 5000,
                         }).then((response) => {
-                            console.log(tocheck_array[i] + " -> " + response.status)
+                            // console.log(tocheck_array[i] + " -> " + response.status)
                             if (response && response?.status === 200) {
                                 working_array.push(tocheck_array[i]);
                                 return database_array[i]
@@ -177,7 +193,7 @@ module.exports = function(app) {
 
                     proms.push(
                         client.get('/').then((response) => {
-                            console.log("socks4" + tocheck_array[i] + " -> " + response.status)
+                            // console.log("socks4: " + tocheck_array[i] + " -> " + response.status)
                             if (response && response?.status === 200) {
                                 working_array.push(tocheck_array[i]);
                                 return database_array[i]
@@ -197,7 +213,7 @@ module.exports = function(app) {
                     });
                     proms.push(
                         client.get('/').then((response) => {
-                            console.log("socks5" + tocheck_array[i] + " -> " + response.status)
+                            // console.log("socks5: " + tocheck_array[i] + " -> " + response.status)
                             if (response && response?.status === 200) {
                                 working_array.push(tocheck_array[i]);
                                 return tocheck_array[i]
