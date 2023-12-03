@@ -1,6 +1,6 @@
 module.exports = {
     debug: true,
-    log_webhook: "https://discord.com/api/webhooks/1064867895676522547/IfRoA67qIvOA10VDqOtDBc4hhmgqdktHwcoHpFNd1GmRnpe8rrdLZhod0KG04pEgbQc7", // webhook to a private discord server where you will receive debug logs
+    log_webhook: "", // webhook to a private discord server where you will receive debug logs
 
     validator: {
         recheck_proxies: true, // check last pool proxies again if they are still alive or not
